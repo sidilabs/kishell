@@ -111,7 +111,7 @@ func Load() ConfigurationFile {
   }
   byteValue, _ := ioutil.ReadAll(jsonFile)
   var configFile ConfigurationFile
-  err = json.Unmarshal(byteValue, &configFile)
+  err = json.NewDecoder(jsonFile).Decode(&configFile)
   checkError(err)
   defer jsonFile.Close()
   return configFile
