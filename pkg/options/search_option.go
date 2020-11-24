@@ -74,7 +74,10 @@ func (s *SearchCmd) Run(ctx *Context) error {
 
   server := ctx.ConfigFile.Servers[ctx.ConfigFile.CurrentServer]
   if len(s.Server) > 0 {
-   server = ctx.ConfigFile.Servers[s.Server]
+   server, ok = ctx.ConfigFile.Servers[s.Server]
+   if !ok {
+       return fmt.Errorf("Server %s does not exist", s.Server)
+   }
   }
   role := ctx.ConfigFile.Roles[ctx.ConfigFile.CurrentRole]
 
