@@ -37,7 +37,7 @@ func addServer(configFile *config.ConfigurationFile) {
   fmt.Print("Set as default? [Y/n]: ")
   defaultServer, _ := reader.ReadString(lineBreakAsByte)
   defaultServer = strings.TrimSuffix(defaultServer, lineBreak)
-  if len(configFile.CurrentServer) <=  0 || len(defaultServer) <= 0 || defaultServer == "Y" {
+  if len(configFile.CurrentServer) <=  0 || len(defaultServer) <= 0 || (defaultServer == "Y" || defaultServer == "y") {
     configFile.CurrentServer = serverName
   }
 }
@@ -78,7 +78,7 @@ func addRole(configFile *config.ConfigurationFile)  {
   fmt.Print("Set as default? [Y/n]: ")
   defaultRole, _ := reader.ReadString(lineBreakAsByte)
   defaultRole = strings.TrimSuffix(defaultRole, lineBreak)
-  if len(configFile.CurrentRole) <=  0 || len(defaultRole) <= 0 || defaultRole == "Y" {
+  if len(configFile.CurrentRole) <=  0 || len(defaultRole) <= 0 || (defaultRole == "Y" || defaultRole == "y") {
     configFile.CurrentRole = roleName
   }
 }

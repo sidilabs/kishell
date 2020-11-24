@@ -55,15 +55,15 @@ func (s *SearchCmd) NewerAsTimestamp() (int64, error) {
 }
 
 func toTimestamp(period string) (int64, error) {
-  now := time.Now().Unix()
+  now := time.Now().Unix() * 1000
   if len(period) <= 0 || period == "now" {
-    return now * 1000, nil
+    return now, nil
   }
   duration, err := time.ParseDuration(period)
   if err != nil {
     return -1, err
   }
-  return (now * 1000) - duration.Milliseconds(), nil
+  return now - duration.Milliseconds(), nil
 }
 
 func (o *Option) Run() {

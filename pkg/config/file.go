@@ -109,10 +109,8 @@ func Load() ConfigurationFile {
   } else {
     checkError(err)
   }
-  byteValue, _ := ioutil.ReadAll(jsonFile)
   var configFile ConfigurationFile
   err = json.NewDecoder(jsonFile).Decode(&configFile)
   checkError(err)
-  defer jsonFile.Close()
   return configFile
 }

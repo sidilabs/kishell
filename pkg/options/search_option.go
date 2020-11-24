@@ -3,7 +3,6 @@ package options
 import (
   "bytes"
   "encoding/json"
-  "errors"
   "fmt"
   "github.com/go-http-utils/headers"
   "github.com/sidilabs/kishell/pkg/config"
@@ -74,10 +73,11 @@ func (s *SearchCmd) Run(ctx *Context) error {
 
   server := ctx.ConfigFile.Servers[ctx.ConfigFile.CurrentServer]
   if len(s.Server) > 0 {
-   server, ok = ctx.ConfigFile.Servers[s.Server]
-   if !ok {
-       return fmt.Errorf("Server %s does not exist", s.Server)
-   }
+    serverArg, ok := ctx.ConfigFile.Servers[s.Server]
+    if !ok {
+      return fmt.Errorf("server '%s' is invalid", s.Server)
+    }
+    server = serverArg
   }
   role := ctx.ConfigFile.Roles[ctx.ConfigFile.CurrentRole]
 
@@ -151,7 +151,7 @@ func parseResponse(response *http.Response) (*ResponseData, error) {
     }
   }
 
-  return nil, errors.New(fmt.Sprintf("%s: %s", "Invalid content type", contentType))
+  return nil, fmt.Errorf("invalid content type: %s", contentType)
 }
 
 func buildFromTemplate(name string, templateObj string, data interface{}) (bytes.Buffer, error) {
