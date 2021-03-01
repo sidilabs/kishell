@@ -6,7 +6,6 @@ import (
   "errors"
   "fmt"
   "github.com/sidilabs/kishell/pkg/config"
-  "os"
   "strings"
 )
 
@@ -17,28 +16,28 @@ const (
 
 func (c *ConfigureCmd) Run(ctx *Context) error {
   if c.Server {
-    addServer(&ctx.ConfigFile)
-    return ctx.ConfigFile.Save()
+    addServer(ctx.Configuration)
+    return ctx.Configuration.Save()
   } else if c.Role {
-    addRole(&ctx.ConfigFile)
-    return ctx.ConfigFile.Save()
+    addRole(ctx.Configuration)
+    return ctx.Configuration.Save()
   } else if c.Reset {
-    return ctx.ConfigFile.Reset()
+    return ctx.Configuration.Reset()
   }
   return errors.New("missing parameter. One of the following is expected: --server | --role")
 }
 
-func addServer(configFile *config.ConfigurationFile) {
-  reader := bufio.NewReader(os.Stdin)
+func addServer(configuration config.Configuration) {
+  reader := bufio.NewReader(configuration.GetStdin())
   fmt.Print("Server name: ")
   serverName, _ := reader.ReadString(lineBreakAsByte)
   serverName = strings.TrimSuffix(serverName, lineBreak)
-  configFile.Servers[serverName] = buildServer(reader)
+  configuration.AddServer(serverName, buildServer(reader))
   fmt.Print("Set as default? [Y/n]: ")
   defaultServer, _ := reader.ReadString(lineBreakAsByte)
   defaultServer = strings.TrimSuffix(defaultServer, lineBreak)
-  if len(configFile.CurrentServer) <=  0 || len(defaultServer) <= 0 || (defaultServer == "Y" || defaultServer == "y") {
-    configFile.CurrentServer = serverName
+  if len(configuration.GetServer()) <=  0 || len(defaultServer) <= 0 || (defaultServer == "Y" || defaultServer == "y") {
+    configuration.SetServer(serverName)
   }
 }
 
@@ -69,17 +68,17 @@ func buildServer(reader *bufio.Reader) config.Server {
   return server
 }
 
-func addRole(configFile *config.ConfigurationFile)  {
-  reader := bufio.NewReader(os.Stdin)
+func addRole(configuration config.Configuration)  {
+  reader := bufio.NewReader(configuration.GetStdin())
   fmt.Print("Role name: ")
   roleName, _ := reader.ReadString(lineBreakAsByte)
   roleName = strings.TrimSuffix(roleName, lineBreak)
-  configFile.Roles[roleName] = buildRole(reader)
+  configuration.AddRole(roleName, buildRole(reader))
   fmt.Print("Set as default? [Y/n]: ")
   defaultRole, _ := reader.ReadString(lineBreakAsByte)
   defaultRole = strings.TrimSuffix(defaultRole, lineBreak)
-  if len(configFile.CurrentRole) <=  0 || len(defaultRole) <= 0 || (defaultRole == "Y" || defaultRole == "y") {
-    configFile.CurrentRole = roleName
+  if len(configuration.GetRole()) <=  0 || len(defaultRole) <= 0 || (defaultRole == "Y" || defaultRole == "y") {
+    configuration.SetRole(roleName)
   }
 }
 

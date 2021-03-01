@@ -1,0 +1,35 @@
+{
+  "servers": {
+    "local": {
+      "hostname": "local.test.net",
+      "protocol": "http",
+      "port": "8080",
+      "kibana_version": "1.0.0",
+      "basic_auth": "dGVzdDpwYXNzd2QK"
+    },
+    "httpServer": {
+      "hostname": "local.test.net",
+      "protocol": "http",
+      "kibana_version": "1.0.0",
+      "basic_auth": "dGVzdDpwYXNzd2QK"
+    },
+    "httpsServer": {
+      "hostname": "local.test.net",
+      "protocol": "https",
+      "kibana_version": "1.0.0",
+      "basic_auth": "dGVzdDpwYXNzd2QK"
+    }
+  },
+  "roles": {
+    "local": {
+      "index": "local-*",
+      "window_filter": "@timestamp"
+    },
+    "another": {
+      "index": "another-*",
+      "window_filter": "@created_date"
+    }
+  },
+  "default_server": "local",
+  "default_role": "local"
+}

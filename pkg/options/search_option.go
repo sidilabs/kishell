@@ -58,7 +58,7 @@ func (r *ResponseData) PrintAllSources() error {
 }
 
 func (s *SearchCmd) Run(ctx *Context) error {
-  err := ctx.ConfigFile.IsEmpty()
+  err := ctx.Configuration.CheckEmpty()
   if err != nil {
     return err
   }
@@ -71,15 +71,15 @@ func (s *SearchCmd) Run(ctx *Context) error {
     clause = out.String()
   }
 
-  server := ctx.ConfigFile.Servers[ctx.ConfigFile.CurrentServer]
+  server := ctx.Configuration.GetCurrentServer()
   if len(s.Server) > 0 {
-    serverArg, ok := ctx.ConfigFile.Servers[s.Server]
+    serverArg, ok := ctx.Configuration.FindServer(s.Server)
     if !ok {
       return fmt.Errorf("server '%s' is invalid", s.Server)
     }
     server = serverArg
   }
-  role := ctx.ConfigFile.Roles[ctx.ConfigFile.CurrentRole]
+  role := ctx.Configuration.GetCurrentRole()
 
   currentTime := time.Now()
   olderTs, err := s.OlderAsTimestamp()
@@ -103,22 +103,21 @@ func (s *SearchCmd) Run(ctx *Context) error {
   if err != nil {
     return err
   }
-  data, err := callApi(server, payload)
+  data, err := s.callApi(server, payload)
   if err != nil {
     return err
   }
-  data.PrintAllSources()
+  err = data.PrintAllSources()
+  if err != nil {
+    return err
+  }
   return nil
 }
 
-func callApi(server config.Server, payload bytes.Buffer) (*ResponseData, error) {
+func (s *SearchCmd) callApi(server config.Server, payload bytes.Buffer) (*ResponseData, error) {
   url := fmt.Sprintf("%s://%s:%s%s", server.Protocol, server.Hostname, server.GetPort(), esSearchPath)
 
-  timeout := 5 * time.Second
-  client := http.Client {
-    Timeout: timeout,
-  }
-  request, err := http.NewRequest("POST", url, &payload)
+  request, err := s.httpClient.NewRequest("POST", url, &payload)
   if err != nil {
     return nil, err
   }
@@ -128,7 +127,7 @@ func callApi(server config.Server, payload bytes.Buffer) (*ResponseData, error) 
     request.Header.Add(headers.Authorization, fmt.Sprintf("%s %s", "Basic", server.BasicAuth))
   }
 
-  response, err := client.Do(request)
+  response, err := s.httpClient.Call(request)
   if err != nil {
     return nil, err
   }
@@ -137,6 +136,7 @@ func callApi(server config.Server, payload bytes.Buffer) (*ResponseData, error) 
 }
 
 func parseResponse(response *http.Response) (*ResponseData, error) {
+
   contentType, _, err := mime.ParseMediaType(response.Header.Get(headers.ContentType))
   if contentType == "application/json" {
     if response.StatusCode < 400 {

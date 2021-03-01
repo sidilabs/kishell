@@ -6,10 +6,10 @@ import (
   "errors"
   "fmt"
   "github.com/mitchellh/go-homedir"
+  "io"
   "io/ioutil"
   "os"
 )
-
 
 const (
   configFileName = "/.kishell"
@@ -38,11 +38,42 @@ type Role struct {
   WindowFilter string `json:"window_filter"`
 }
 
+type Location struct {
+  path string
+  name string
+}
+
 type ConfigurationFile struct {
+  stdin io.Reader
+  location Location
   Servers map[string]Server `json:"servers"`
   Roles map[string]Role `json:"roles"`
   CurrentServer string `json:"default_server"`
   CurrentRole string `json:"default_role"`
+}
+
+type Configuration interface {
+  GetLocation() Location
+  GetCurrentServer() Server
+  GetServer() string
+  FindServer(name string) (Server, bool)
+  SetServer(name string)
+  AddServer(name string, server Server)
+  GetCurrentRole() Role
+  GetRole() string
+  FindRole(name string) (Role, bool)
+  SetRole(name string)
+  AddRole(name string, role Role)
+  PrettyPrint() error
+  Save() error
+  CheckEmpty() error
+  Reset() error
+  GetStdin() io.Reader
+}
+
+
+func (l *Location) get() string {
+  return l.path + l.name
 }
 
 func checkError(err error) {
@@ -50,6 +81,52 @@ func checkError(err error) {
     fmt.Println(err)
     os.Exit(1)
   }
+}
+
+func (c *ConfigurationFile) GetLocation() Location {
+  return c.location
+}
+
+func (c *ConfigurationFile) GetCurrentServer() Server {
+  return c.Servers[c.CurrentServer]
+}
+
+func (c *ConfigurationFile) GetServer() string {
+  return c.CurrentServer
+}
+
+func (c *ConfigurationFile) FindServer(name string) (Server, bool) {
+  server, ok := c.Servers[name]
+  return server, ok
+}
+
+func (c *ConfigurationFile) SetServer(name string) {
+  c.CurrentServer = name
+}
+
+func (c *ConfigurationFile) AddServer(name string, server Server) {
+  c.Servers[name] = server
+}
+
+func (c *ConfigurationFile) GetCurrentRole() Role {
+  return c.Roles[c.CurrentRole]
+}
+
+func (c *ConfigurationFile) GetRole() string {
+  return c.CurrentRole
+}
+
+func (c *ConfigurationFile) FindRole(name string) (Role, bool) {
+  role, ok := c.Roles[name]
+  return role, ok
+}
+
+func (c *ConfigurationFile) SetRole(name string) {
+  c.CurrentRole = name
+}
+
+func (c *ConfigurationFile) AddRole(name string, role Role) {
+  c.Roles[name] = role
 }
 
 func (c *ConfigurationFile) PrettyPrint() error {
@@ -71,14 +148,14 @@ func (c *ConfigurationFile) Save() error {
   if err != nil {
     return err
   }
-  err = ioutil.WriteFile(homeDir() + configFileName, content, 0600)
+  err = ioutil.WriteFile(c.location.get(), content, 0600)
   if err != nil {
     return err
   }
   return nil
 }
 
-func (c *ConfigurationFile) IsEmpty() error {
+func (c *ConfigurationFile) CheckEmpty() error {
   if c.Servers == nil || len(c.Servers) <= 0 || c.Roles == nil || len(c.Roles) <= 0 {
     return errors.New("kishell is not configured. Use configure option before searching")
   }
@@ -86,11 +163,15 @@ func (c *ConfigurationFile) IsEmpty() error {
 }
 
 func (c *ConfigurationFile) Reset() error {
-  configFile := ConfigurationFile {
-    Servers: map[string]Server{},
-    Roles: map[string]Role{},
-  }
-  return configFile.Save()
+  c.Servers = make(map[string]Server)
+  c.Roles = make(map[string]Role)
+  c.CurrentServer = ""
+  c.CurrentRole = ""
+  return c.Save()
+}
+
+func (c *ConfigurationFile) GetStdin() io.Reader {
+  return c.stdin
 }
 
 func homeDir() string {
@@ -99,10 +180,19 @@ func homeDir() string {
   return homeDir
 }
 
-func Load() ConfigurationFile {
-  jsonFile, err := os.Open(homeDir() + configFileName)
+func LoadDefaultConfig() Configuration {
+  return loadConfig(homeDir(), configFileName)
+}
+
+func loadConfig(path string, fileName string) Configuration {
+  jsonFile, err := os.Open(path + fileName)
   if err != nil && os.IsNotExist(err) {
-    return ConfigurationFile{
+    return &ConfigurationFile {
+      stdin: os.Stdin,
+      location: Location {
+        path: path,
+        name: fileName,
+      },
       Servers: map[string]Server{},
       Roles: map[string]Role{},
     }
@@ -112,5 +202,9 @@ func Load() ConfigurationFile {
   var configFile ConfigurationFile
   err = json.NewDecoder(jsonFile).Decode(&configFile)
   checkError(err)
-  return configFile
+  configFile.location = Location {
+    path: path,
+    name: fileName,
+  }
+  return &configFile
 }
