@@ -3,17 +3,18 @@ package options
 import (
   "github.com/alecthomas/kong"
   "github.com/sidilabs/kishell/pkg/config"
+  "github.com/sidilabs/kishell/pkg/utils"
   "time"
 )
 
 type Context struct {
-  Debug bool
-  ConfigFile config.ConfigurationFile
+  Debug         bool
+  Configuration config.Configuration
 }
 
 type Option struct {
   Context *kong.Context
-  ConfigFile config.ConfigurationFile
+  ConfigFile config.Configuration
 }
 
 type ConfigureCmd struct {
@@ -36,6 +37,7 @@ type SearchCmd struct {
   Newer string `optional default:"15m" help:"Data newer than. Defaults to 15m when not provided (e.g. 30m, 1h, 1w, 1M, 1y)"`
   Limit int32 `optional default:"50" help:"Limit the number of messages fetched"`
   Server string `optional help:"Which server to query against. Used to override the current server config"`
+  httpClient utils.HttpClient `-`
 }
 
 var CLI struct {
@@ -54,6 +56,11 @@ func (s *SearchCmd) NewerAsTimestamp() (int64, error) {
   return toTimestamp(s.Newer)
 }
 
+func (s *SearchCmd) AfterApply(h *utils.DefaultHttpClient) error {
+  s.httpClient = h
+  return nil
+}
+
 func toTimestamp(period string) (int64, error) {
   now := time.Now().Unix() * 1000
   if len(period) <= 0 || period == "now" {
@@ -68,17 +75,20 @@ func toTimestamp(period string) (int64, error) {
 
 func (o *Option) Run() {
   err := o.Context.Run(&Context {
-      Debug: CLI.Debug,
-      ConfigFile: o.ConfigFile,
+      Debug:         CLI.Debug,
+      Configuration: o.ConfigFile,
   })
   o.Context.FatalIfErrorf(err)
 }
 
 func Parse() Option {
-  context := kong.Parse(&CLI)
+  httpClient := &utils.DefaultHttpClient{
+    Timeout: 5 * time.Second,
+  }
+  context := kong.Parse(&CLI, kong.Bind(httpClient))
   opt := Option {
     Context: context,
-    ConfigFile: config.Load(),
+    ConfigFile: config.LoadDefaultConfig(),
   }
   return opt
 }
