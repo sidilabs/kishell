@@ -1,4 +1,4 @@
-name: Go
+name: build
 
 on:
   push:
@@ -34,11 +34,7 @@ jobs:
     - name: Test
       run: go test -v -covermode=count -coverprofile=coverage.out github.com/sidilabs/kishell/pkg/...
 
-    - name: Convert coverage to lcov
-      uses: jandelgado/gcov2lcov-action@v1.0.8
-
-    - name: Coveralls
-      uses: coverallsapp/github-action@v1.1.2
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v1
       with:
-        github-token: ${{ secrets.github_token }}
-        path-to-lcov: coverage.lcov
+        token: ${{ secrets.CODECOV_TOKEN }}
