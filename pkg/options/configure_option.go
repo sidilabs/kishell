@@ -14,6 +14,9 @@ const (
 	lineBreakAsByte = '\n'
 )
 
+// Runs the configure option.
+// It can configure both server and role definitions.
+// Saves each definition in the config file.
 func (c *ConfigureCmd) Run(ctx *Context) error {
 	if c.Server {
 		addServer(ctx.Configuration)

@@ -5,6 +5,10 @@ import (
 	"fmt"
 )
 
+// Runs the use option.
+// Use option defines which must be the default option for server and role definitions.
+// Every time kishell runs it uses these definitions to query for data like which server to make requests and which
+// index and time window configuration to use.
 func (u *UseCmd) Run(ctx *Context) error {
 	if len(u.Server) > 0 {
 		_, ok := ctx.Configuration.FindServer(u.Server)

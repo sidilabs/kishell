@@ -12,6 +12,7 @@ import (
 	"time"
 )
 
+// Attributes used to query for data.
 type SearchParams struct {
 	Index        string
 	Size         int32
@@ -22,6 +23,7 @@ type SearchParams struct {
 	Newer        int64
 }
 
+// Response payload.
 type ResponseData struct {
 	Payload map[string]interface{}
 }
@@ -37,7 +39,7 @@ const (
 `
 )
 
-func (r *ResponseData) PrintAllSources() error {
+func (r *ResponseData) printAllSources() error {
 	for _, element := range r.Payload {
 		responses := element.([]interface{})
 		for _, item := range responses {
@@ -57,6 +59,9 @@ func (r *ResponseData) PrintAllSources() error {
 	return nil
 }
 
+// Runs the search option.
+// Queries ES server for data.
+// Prints the results in the stdout.
 func (s *SearchCmd) Run(ctx *Context) error {
 	err := ctx.Configuration.CheckEmpty()
 	if err != nil {
@@ -107,7 +112,7 @@ func (s *SearchCmd) Run(ctx *Context) error {
 	if err != nil {
 		return err
 	}
-	err = data.PrintAllSources()
+	err = data.printAllSources()
 	if err != nil {
 		return err
 	}
