@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-// Runs the use option.
+// Run the use option.
 // Use option defines which must be the default option for server and role definitions.
 // Every time kishell runs it uses these definitions to query for data like which server to make requests and which
 // index and time window configuration to use.
