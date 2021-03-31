@@ -208,7 +208,6 @@ func LoadDefaultConfig() Configuration {
 
 func loadConfig(path string, fileName string) Configuration {
 	jsonFile, err := os.Open(path + fileName)
-    checkError(err)
 	if err != nil && os.IsNotExist(err) {
 		return &ConfigurationFile{
 			stdin: os.Stdin,
