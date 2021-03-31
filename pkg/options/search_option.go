@@ -141,8 +141,10 @@ func (s *SearchCmd) callApi(server config.Server, payload bytes.Buffer) (*Respon
 }
 
 func parseResponse(response *http.Response) (*ResponseData, error) {
-
 	contentType, _, err := mime.ParseMediaType(response.Header.Get(headers.ContentType))
+	if err != nil {
+	    return nil, err
+    }
 	if contentType == "application/json" {
 		if response.StatusCode < 400 {
 			var result map[string]interface{}
