@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-// Attributes used to query for data.
+// SearchParams represents attributes used to query for data.
 type SearchParams struct {
 	Index        string
 	Size         int32
@@ -23,7 +23,7 @@ type SearchParams struct {
 	Newer        int64
 }
 
-// Response payload.
+// ResponseData represents the response payload.
 type ResponseData struct {
 	Payload map[string]interface{}
 }
@@ -59,7 +59,7 @@ func (r *ResponseData) printAllSources() error {
 	return nil
 }
 
-// Runs the search option.
+// Run the search option.
 // Queries ES server for data.
 // Prints the results in the stdout.
 func (s *SearchCmd) Run(ctx *Context) error {
