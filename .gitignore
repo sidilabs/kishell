@@ -16,3 +16,6 @@
 
 # IDEs
 .idea/
+
+# Do not track own binary
+kishell
