@@ -5,10 +5,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/mitchellh/go-homedir"
 	"io"
 	"io/ioutil"
 	"os"
+
+	"github.com/mitchellh/go-homedir"
 )
 
 const (
@@ -222,6 +223,7 @@ func loadConfig(path string, fileName string) Configuration {
 	var configFile ConfigurationFile
 	err = json.NewDecoder(jsonFile).Decode(&configFile)
 	checkError(err)
+	configFile.stdin = os.Stdin
 	configFile.location = Location{
 		path: path,
 		name: fileName,

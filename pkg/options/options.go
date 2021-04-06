@@ -1,10 +1,11 @@
 package options
 
 import (
+	"time"
+
 	"github.com/alecthomas/kong"
 	"github.com/sidilabs/kishell/pkg/config"
 	"github.com/sidilabs/kishell/pkg/utils"
-	"time"
 )
 
 // Context configuration.

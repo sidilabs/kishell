@@ -16,6 +16,7 @@
 
 # IDEs
 .idea/
+.vscode/
 
 # Do not track own binary
 kishell

@@ -16,6 +16,19 @@ Read the manual:
 ```
 ./kishell configure -h 
 ```
+```
+Usage: kishell configure
+
+Init ES server configs
+
+Flags:
+  -h, --help      Show context-sensitive help.
+      --debug     Enable debug mode.
+
+      --server    Add a new server definition
+      --role      Add a new role definition
+      --reset     Reset the whole configuration
+```
 
 Add a server to the configuration:
 ```
@@ -25,4 +38,9 @@ Add a server to the configuration:
 Define the role to be used:
 ```
 ./kishell configure --role
+```
+
+Send queries to Elasticsearch:
+```
+./kishell search <QUERY>
 ```

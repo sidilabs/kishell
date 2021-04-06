@@ -27,5 +27,5 @@ func (c *DefaultHTTPClient) Call(req *http.Request) (*http.Response, error) {
 
 // NewRequest creates new HTTP requests.
 func (c *DefaultHTTPClient) NewRequest(method, url string, body io.Reader) (*http.Request, error) {
-	return &http.Request{}, nil
+	return http.NewRequest(method, url, body)
 }
