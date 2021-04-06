@@ -3,3 +3,26 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/sidilabs/kishell)](https://goreportcard.com/report/github.com/sidilabs/kishell)
 # kishell
 Data export CLI for Elasticsearch
+
+## Build
+
+```
+go build -v github.com/sidilabs/kishell/cmd/kishell
+```
+
+## Usage
+
+Read the manual:
+```
+./kishell configure -h 
+```
+
+Add a server to the configuration:
+```
+./kishell configure --server  
+```
+
+Define the role to be used:
+```
+./kishell configure --role
+```
