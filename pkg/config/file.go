@@ -228,5 +228,6 @@ func loadConfig(path string, fileName string) Configuration {
 		path: path,
 		name: fileName,
 	}
+	configFile.stdin = os.Stdin
 	return &configFile
 }

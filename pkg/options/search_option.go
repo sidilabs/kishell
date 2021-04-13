@@ -1,15 +1,15 @@
 package options
 
 import (
-	"bytes"
-	"encoding/json"
-	"fmt"
-	"github.com/go-http-utils/headers"
-	"github.com/sidilabs/kishell/pkg/config"
-	"mime"
-	"net/http"
-	"text/template"
-	"time"
+    "bytes"
+    "encoding/json"
+    "fmt"
+    "github.com/go-http-utils/headers"
+    "github.com/sidilabs/kishell/pkg/config"
+    "mime"
+    "net/http"
+    "text/template"
+    "time"
 )
 
 // SearchParams represents attributes used to query for data.
@@ -41,7 +41,13 @@ const (
 
 func (r *ResponseData) printAllSources() error {
 	for _, element := range r.Payload {
-		responses := element.([]interface{})
+        switch element.(type) {
+        case int:
+        case float64:
+          continue
+        default:
+        }
+        responses := element.([]interface{})
 		for _, item := range responses {
 			response := item.(map[string]interface{})
 			hits := response["hits"].(map[string]interface{})["hits"].([]interface{})
@@ -156,6 +162,10 @@ func parseResponse(response *http.Response) (*ResponseData, error) {
 			responseData.Payload = result
 			return responseData, nil
 		}
+        buffer := new(bytes.Buffer)
+        buffer.ReadFrom(response.Body)
+        responseBody := buffer.String()
+        return nil, fmt.Errorf("unable to communicate with server - %s", responseBody)
 	}
 
 	return nil, fmt.Errorf("invalid content type: %s", contentType)

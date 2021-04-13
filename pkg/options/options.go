@@ -96,7 +96,7 @@ func (o *Option) Run() {
 // Parse the CLI arguments.
 func Parse() Option {
 	httpClient := &utils.DefaultHTTPClient{
-		Timeout: 5 * time.Second,
+		Timeout: 30 * time.Second,
 	}
 	context := kong.Parse(&CLI, kong.Bind(httpClient))
 	opt := Option{
