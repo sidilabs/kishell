@@ -2,11 +2,11 @@
 
 Spin up a single node Elasticsearch cluster including Kibana to perform end-to-end testing.
 
-Elasticsearch available at http://localhost:9200/ and Kibana at http://localhost:5601.
+Elasticsearch is available at http://localhost:9200/ and Kibana at http://localhost:5601.
 
 ## How to
 
-First spin up the test stack:
+Spin up the test stack:
 
 ```
 docker compose up --build
@@ -14,7 +14,7 @@ docker compose up --build
 
 Once it is done, configure kishell to be able to query from the local stack.
 
-First we need to configure the server:
+First, we need to configure the server:
 ```
 /kishell --configure server
 ```
@@ -28,7 +28,7 @@ First we need to configure the server:
     Kibana Version: 6.8.6
     Set as default? [Y/n]: 
 ```
-Once the server is know, configure the role:
+Once the server is known, configure the role:
 ```
 /kishell --configure role
 ```
