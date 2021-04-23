@@ -40,8 +40,8 @@ type ListCmd struct {
 // SearchCmd represents CLI arguments for search option.
 type SearchCmd struct {
 	Query      string           `optional help:"Text input to query data. Use the same format as you would use in Kibana"`
-	Older      string           `optional default:"now" help:"Data older than. Defaults to current time when not provided (e.g. 30m, 1h, 1w, 1M, 1y)"`
-	Newer      string           `optional default:"15m" help:"Data newer than. Defaults to 15m when not provided (e.g. 30m, 1h, 1w, 1M, 1y)"`
+	Older      string           `optional default:"now" help:"Data older than. Defaults to current time when not provided. Valid time units are 'ns', 'us' (or 'µs'), 'ms', 's', 'm', 'h'."`
+	Newer      string           `optional default:"15m" help:"Data newer than. Defaults to 15m when not provided. Valid time units are 'ns', 'us' (or 'µs'), 'ms', 's', 'm', 'h'."`
 	Limit      int32            `optional default:"50" help:"Limit the number of messages fetched"`
 	Server     string           `optional help:"Which server to query against. Used to override the current server config"`
 	httpClient utils.HTTPClient `-`
@@ -53,7 +53,7 @@ var CLI struct {
 	Configure ConfigureCmd `cmd help:"Init ES server configs"`
 	List      ListCmd      `cmd help:"Show the current server configs"`
 	Search    SearchCmd    `cmd help:"Search for data"`
-	Use       UseCmd       `cmd help:"Update config options with ser/role preferences"`
+	Use       UseCmd       `cmd help:"Switch between configured server/role"`
 }
 
 // OlderAsTimestamp converts a ISO-8601 period as string in timestamp.
