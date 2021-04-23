@@ -1,0 +1,14 @@
+FROM alpine:3.13.5
+
+# install minimal set of tools into the alpine
+RUN apk update && apk add bash curl gzip && rm -rf /var/cache/apk/*
+
+RUN mkdir -p /tmp/data/
+
+COPY ./logs.jsonl.gz /tmp/data/logs.jsonl.gz
+
+RUN gunzip /tmp/data/logs.jsonl.gz
+
+COPY ./load-data.sh /tmp/data/load-data.sh
+
+RUN chmod -R 777 /tmp/data/*
