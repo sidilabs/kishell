@@ -42,5 +42,5 @@ Once the server is known, configure the role:
 Now it is possible to query the data with a known expected result thanks to the data loaded on the local stack.
 
 ```
-./kishell search --newer="8760h"
+./kishell search --newer="8760h" --query="clientip:172.155.107.128"
 ```
