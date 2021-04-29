@@ -2,24 +2,42 @@
 
 Spin up a single node Elasticsearch cluster including Kibana to perform end-to-end testing.
 
-Elasticsearch is available at http://localhost:9200/ and Kibana at http://localhost:5601.
+Elasticsearch will be available at http://localhost:9200/ and Kibana at http://localhost:5601.
 
 ## How to
 
+### Setup local environment
 Spin up the test stack:
 
 ```
-docker compose up --build
+docker-compose up
 ```
 
+###### In case you edit the docker-compose.yml you need to run with --build option. Like: 
+
+```
+docker-compose up --build
+```
+
+### Kishell Configuration
 Once it is done, configure kishell to be able to query from the local stack.
 
-First, we need to configure the server:
+1. Build Kishell from cmd folder with 
+
 ```
-/kishell --configure server
+go build -v ./cmd/kishell
 ```
+
+2. We need to configure the server:
+
 ```
-    Server name: local
+./kishell configure --server
+```
+
+###### Put this values: 
+
+```
+	Server name: local
     Protocol: http
     Hostname: localhost
     Port: 5601
@@ -28,10 +46,15 @@ First, we need to configure the server:
     Kibana Version: 6.8.6
     Set as default? [Y/n]: 
 ```
+
 Once the server is known, configure the role:
+
 ```
-/kishell --configure role
+./kishell configure --role
 ```
+
+###### Put this values: 
+
 ```
     Role name: local
     Index name: logstash-*
@@ -44,3 +67,13 @@ Now it is possible to query the data with a known expected result thanks to the 
 ```
 ./kishell search --newer="8760h" --query="clientip:172.155.107.128"
 ```
+
+## Troubleshoot
+
+If you have this error when you try to run```docker-compose up --build``` :
+
+```
+bootstrap checks failed elasticsearch | [1]: max virtual memory areas vm.max_map_count [65530] is too low, increase to at least [262144] docker
+```
+
+Visit this link to fix it according to your OS: [Docker Client Run Mode](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html#docker-cli-run-prod-mode).
