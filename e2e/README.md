@@ -37,7 +37,7 @@ go build -v ./cmd/kishell
 ###### Put this values: 
 
 ```
-	Server name: local
+    Server name: local
     Protocol: http
     Hostname: localhost
     Port: 5601
